@@ -1,0 +1,21 @@
+{
+  "name": "Robot Legs Eye-Tracking",
+  "version": "1.0",
+  "description": "An interface for users to interact with web pages using eye tracking equipment.",
+  "browser_action": {
+    "default_icon": {
+      "16": "images/active_icon_16.png",
+      "19": "images/active_icon_19.png",
+      "38": "images/active_icon_38.png",
+      "48": "images/active_icon_48.png",
+      "128": "images/active_icon_128.png"
+    },
+    "default_title": "Robot Legs Eye-Tracking"      // optional; shown in tooltip
+  },
+  "homepage_url": "https://github.com/Neilos/robot_legs_1",
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": false
+  },
+  "manifest_version": 2
+}
