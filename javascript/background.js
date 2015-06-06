@@ -6,7 +6,6 @@ var active = true
 chrome.browserAction.onClicked.addListener(function(tab) {
   if (active) {
     active = false
-    console.log('inactive')
     chrome.browserAction.setIcon({
       "path": {
         "19": "images/inactive_icon_19.png",
@@ -15,13 +14,22 @@ chrome.browserAction.onClicked.addListener(function(tab) {
     });
   } else {
     active = true
-    console.log('active')
     chrome.browserAction.setIcon({
       "path": {
         "19": "images/active_icon_19.png",
         "38": "images/active_icon_38.png"
       }
     });
+
   }
 
+  document.addEventListener('DOMContentLoaded', function () {
+    console.log('coloring')
+    document.body.style.backgroundColor = "red"
+  });
+
+  // console.log('Turning ' + tab.url + ' red!');
+  // chrome.tabs.executeScript({
+  //   code: 'document.body.style.backgroundColor="red"'
+  // });
 });

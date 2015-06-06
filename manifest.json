@@ -14,8 +14,7 @@
   },
   "homepage_url": "https://github.com/Neilos/robot_legs_1",
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "scripts": ["javascript/background.js"]
   },
   "manifest_version": 2
 }
