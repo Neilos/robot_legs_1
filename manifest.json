@@ -17,6 +17,7 @@
     "scripts": ["javascript/background.js"]
   },
   "content_scripts": [ {
+    "css": ["styles.css"],
     "js": [ "/javascript/jquery-2.1.4.min.js", "/javascript/dom_scripts.js" ],
     "run_at": "document_end",
     "matches": [ "http://*/*", "https://*/*"]

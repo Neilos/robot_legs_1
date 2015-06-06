@@ -1,1 +1,1 @@
-$('body').prepend('<h1>HELLO</h1>')
+$('body').prepend('<h1 id="hello">HELLO</h1>')
