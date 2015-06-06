@@ -16,5 +16,10 @@
   "background": {
     "scripts": ["javascript/background.js"]
   },
+  "content_scripts": [ {
+    "js": [ "/javascript/jquery-2.1.4.min.js", "/javascript/dom_scripts.js" ],
+    "run_at": "document_end",
+    "matches": [ "http://*/*", "https://*/*"]
+  }],
   "manifest_version": 2
 }
