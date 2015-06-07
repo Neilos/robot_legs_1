@@ -1,3 +1,6 @@
+var gazeTime = 1000 // time staring at something until action is confirmed
+var timer;
+var cursorSize = 90
 var controls =  '<div id="eye-tracking-controls" style="position: fixed; display: none;">' +
                   '<button class="action-button" type="button">ACTION</button>' +
                   '<button class="cancel-button" type="button">CANCEL</button>' +
@@ -36,10 +39,6 @@ function positionControls() {
   $('body').css('margin-bottom', footerHeight);
   $('#eye-tracking-controls').css('display','block'); // show it once it's positioned
 }
-
-var gazeTime = 1000;
-var timer;
-var cursorSize = 90
 
 function spotlightCursorOn(e) {
   $('#eye-tracking-mask').css('background', 'radial-gradient(' +
