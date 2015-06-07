@@ -6,12 +6,13 @@ var controls =  '<div id="eye-tracking-controls" style="position: fixed; display
                   '<button class="cancel-button" type="button">CANCEL</button>' +
                 '</div>'
 
-var overlay =  '<div id="eye-tracking-mask" style="position: fixed; top: 0; left: 0; display: block;"></div>'
-
-$('body').append(overlay)
 $('html').append(controls)
 
 $('#eye-tracking-controls > .action-button').on('click', function (e) {
+  var overlay =  '<div id="eye-tracking-mask" style="position: fixed; top: 0; left: 0; display: block;"></div>'
+
+  $('body').append(overlay)
+
   $('body').on('mousemove', function (e) {
     spotlightCursorOn(e)
   });
@@ -50,7 +51,7 @@ function spotlightCursorOn(e) {
 
 function spotlightCursorOff() {
   $('body').unbind('mousemove')
-  $('#eye-tracking-mask').css('background', 'rgba(255, 255, 255, 0)');
+  $('#eye-tracking-mask').remove()
 }
 
 $('#eye-tracking-controls').on({
