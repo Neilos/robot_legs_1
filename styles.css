@@ -1,12 +1,39 @@
 #eye-tracking-controls {
   width: 100%;
-  background-color: yellow;
-  color: red;
-  z-index: 1000;
+  background-color: silver;
+  z-index: 9999999;
 }
 
 #eye-tracking-mask {
   height: 100%;
   width: 100%;
+  z-index: 999999;
   pointer-events: none;
 }
+
+#eye-tracking-controls > button {
+  margin: 0.25em;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset;
+  -webkit-transition: background-color 300ms ease-out;
+  -moz-transition: background-color 300ms ease-out;
+  transition: background-color 300ms ease-out;
+  border-style: solid;
+  border-width: 1px;
+  cursor: pointer;
+  font-family: Helvetica, Arial, Sans-Serif;
+  font-weight: 300;
+  line-height: 1.5em;
+  position: relative;
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
+  padding-top: 1.5em;
+  padding-right: 1.5em;
+  padding-bottom: 1.5em;
+  padding-left: 1.5em;
+  font-size: 1.5em;
+  background-color: darkseagreen;
+  border-color: cadetblue;
+  color: white;
+}
+
