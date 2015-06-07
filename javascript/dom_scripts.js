@@ -1,11 +1,25 @@
 var controls =  '<div id="eye-tracking-controls" style="position: fixed; display: none;">' +
-                  'I am a footer' +
+                  '<button class="action-button" type="button">ACTION</button>' +
+                  '<button class="cancel-button" type="button">CANCEL</button>' +
                 '</div>'
 
 var overlay =  '<div id="eye-tracking-mask" style="position: fixed; top: 0; left: 0; display: block;"></div>'
 
 $('body').append(overlay)
 $('html').append(controls)
+
+$('#eye-tracking-controls > .action-button').on('click', function (e) {
+  $('body').on('mousemove', function (e) {
+    spotlightCursorOn(e)
+  });
+  console.log('performing action')
+})
+
+$('#eye-tracking-controls > .cancel-button').on('click', function (e) {
+  spotlightCursorOff()
+  console.log('cancelling action')
+})
+
 $(function(){
   $(window).resize(function(e){
     positionControls();
@@ -36,12 +50,12 @@ function spotlightCursorOn(e) {
 }
 
 function spotlightCursorOff() {
+  $('body').unbind('mousemove')
   $('#eye-tracking-mask').css('background', 'rgba(255, 255, 255, 0)');
 }
 
 $('#eye-tracking-controls').on({
   mouseover: function (e) {
-    spotlightCursorOff()
     // console.log(e.clientX)
     // console.log(e.clientY)
     // timer = setTimeout(function () {
@@ -50,11 +64,6 @@ $('#eye-tracking-controls').on({
     // }, gazeTime);
   },
   mouseout: function () {
-    // clearTimeout(timer);
-    $('body').on('mousemove', function (e) {
-      spotlightCursorOn(e)
-      // console.log(document.elementFromPoint(e.clientX, e.clientY));
-    });
   }
 });
 
