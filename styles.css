@@ -1,3 +1,7 @@
+html, body {
+  overflow: auto !important;
+}
+
 #eye-tracking-controls {
   width: 100%;
   background-color: silver;
