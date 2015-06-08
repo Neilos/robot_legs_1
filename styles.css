@@ -51,4 +51,8 @@ html, body {
   width: auto;
 }
 
+#eye-tracking-controls button[disabled="true"] {
+  background-color: gray;
+  border-color: darkgray;
+}
 

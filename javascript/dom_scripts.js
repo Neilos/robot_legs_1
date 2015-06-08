@@ -12,22 +12,22 @@ var controls =  '<div id="eye-tracking-controls" style="position: fixed; display
                   '<div class="action-controls" >' +
                     '<button class="action-button" >ACTION</button>' +
                     '<button class="cancel-action-button" style="display: none;">CANCEL ACTION</button>' +
-                    '<button class="keyboard-button" >KEYBOARD</button>' +
+                    '<button disabled="true" class="keyboard-button" >KEYBOARD</button>' +
                   '</div>' +
                   '<div class="scroll-controls" >' +
-                    '<button class="scroll-button" >SCROLL</button>' +
-                    '<button class="up-button" >UP   </button>' +
-                    '<button class="down-button" >DOWN </button>' +
-                    '<button class="left-button" >LEFT </button>' +
-                    '<button class="right-button" >RIGHT</button>' +
-                    '<button class="cancel-scroll-button" style="display: none;">CANCEL SCROLL</button>' +
+                    '<button disabled="true" class="scroll-button" >SCROLL</button>' +
+                    '<button disabled="true" class="up-button" >UP   </button>' +
+                    '<button disabled="true" class="down-button" >DOWN </button>' +
+                    '<button disabled="true" class="left-button" >LEFT </button>' +
+                    '<button disabled="true" class="right-button" >RIGHT</button>' +
+                    '<button disabled="true" class="cancel-scroll-button" style="display: none;">CANCEL SCROLL</button>' +
                   '</div>' +
                   '<div class="browser-controls" >' +
-                    '<button class="back-button" >BACK</button>' +
-                    '<button class="forward-button" >FORWARD</button>' +
-                    '<button class="refresh-button" >REFRESH</button>' +
-                    '<button class="home-button" >HOME</button>' +
-                    '<button class="settings-button" >SETTINGS</button>' +
+                    '<button disabled="true" class="back-button" >BACK</button>' +
+                    '<button disabled="true" class="forward-button" >FORWARD</button>' +
+                    '<button disabled="true" class="refresh-button" >REFRESH</button>' +
+                    '<button disabled="true" class="home-button" >HOME</button>' +
+                    '<button disabled="true" class="settings-button" >SETTINGS</button>' +
                   '</div>' +
                 '</div>'
 
