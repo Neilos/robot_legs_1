@@ -69,7 +69,6 @@ $('#eye-tracking-controls > .action-button').on('click', function (e) {
 $('#eye-tracking-controls > .cancel-button').on('click', function (e) {
   spotlightCursorOff()
   stopSamplingTargets()
-  console.log('cancelling action')
 })
 
 function isFocussable (element) {
@@ -153,7 +152,7 @@ function triggerSelection (element) {
             finally { console.log('second click attempt')}
           }
           finally {
-            console.log(element)
+            console.log('Target element is: ', element)
           }
         }, hoverDuration)
       }
