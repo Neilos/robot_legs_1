@@ -51,6 +51,7 @@ $('#eye-tracking-controls > .action-button').on('click', function (e) {
 
   $('body *').on('eye-tracking-targeting', function (e) {
     if (isFocussable(this)) {
+      potentialTargets.slice(-(sampleSize + 1))
       potentialTargets.push(this)
       pickTarget()
       e.stopPropagation()
