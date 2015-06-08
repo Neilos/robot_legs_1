@@ -1,5 +1,5 @@
-var gazeTime = 2000 // time staring at something until action is confirmed
-var userSelectionDelay = 1000 // delay for user to focus before gazeTime starts
+var gazeTime = 1500 // time staring at something until action is confirmed
+var userSelectionDelay = 2000 // delay for user to focus before gazeTime starts
 var guessInterval = 10 // delay between target guesses
 var cursorSize = 90
 var hoverDuration = 400 // time to allow for hovering animations before triggering clicks
