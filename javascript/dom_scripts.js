@@ -92,9 +92,8 @@ function pickTarget () {
 }
 
 function positionControls () {
-  var windHeight = $(window).height();
   var controlsHeight = $('#eye-tracking-controls').height();
-  var offset = parseInt(windHeight) - parseInt(controlsHeight);
+  var offset = parseInt(window.innerHeight) - parseInt(controlsHeight);
   $('#eye-tracking-controls').css('top',offset);
   $('body').css('margin-bottom', controlsHeight);
   $('#eye-tracking-controls').css('display','block'); // show it once it's positioned
