@@ -56,3 +56,8 @@ html, body {
   border-color: darkgray;
 }
 
+#eye-tracking-controls button.active {
+  background-color: seagreen;
+  border-color: cadetblue;
+}
+

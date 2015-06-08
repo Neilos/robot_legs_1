@@ -1,27 +1,16 @@
 var gazeTime = 1500 // time staring at something until action is confirmed
-var userSelectionDelay = 2000 // delay for user to focus before gazeTime starts
-var guessInterval = 10 // delay between target guesses
+var userSelectionDelay = 2500 // delay for user to focus before gazeTime starts
+var activationInterval = 100 // delay between target guesses
 var cursorSize = 90
 var hoverDuration = 400 // time to allow for hovering animations before triggering clicks
-var sampleSize = gazeTime / guessInterval // number of consecutive elements that should match
+var sampleSize = gazeTime / activationInterval // number of consecutive elements that should match
 var cursorPosition = { x: -1000, y: -1000 }
 var potentialTargets = []
-var guessingTimer;
+var actionActivationTimer = []
+var sampleIntervalTimer
+var actionButtonActivated = false
 
 var controls =  '<div id="eye-tracking-controls" style="position: fixed; display: none;">' +
-                  '<div class="action-controls" >' +
-                    '<button class="action-button" >ACTION</button>' +
-                    '<button class="cancel-action-button" style="display: none;">CANCEL ACTION</button>' +
-                    '<button disabled="true" class="keyboard-button" >KEYBOARD</button>' +
-                  '</div>' +
-                  '<div class="scroll-controls" >' +
-                    '<button disabled="true" class="scroll-button" >SCROLL</button>' +
-                    '<button disabled="true" class="up-button" >UP   </button>' +
-                    '<button disabled="true" class="down-button" >DOWN </button>' +
-                    '<button disabled="true" class="left-button" >LEFT </button>' +
-                    '<button disabled="true" class="right-button" >RIGHT</button>' +
-                    '<button disabled="true" class="cancel-scroll-button" style="display: none;">CANCEL SCROLL</button>' +
-                  '</div>' +
                   '<div class="browser-controls" >' +
                     '<button disabled="true" class="back-button" >BACK</button>' +
                     '<button disabled="true" class="forward-button" >FORWARD</button>' +
@@ -29,65 +18,63 @@ var controls =  '<div id="eye-tracking-controls" style="position: fixed; display
                     '<button disabled="true" class="home-button" >HOME</button>' +
                     '<button disabled="true" class="settings-button" >SETTINGS</button>' +
                   '</div>' +
+                  '<div class="action-controls" >' +
+                    '<button class="action-button" >ACTION</button>' +
+                    '<button disabled="true" class="scroll-button" >SCROLL</button>' +
+                    '<button disabled="true" class="up-button" >UP   </button>' +
+                    '<button disabled="true" class="down-button" >DOWN </button>' +
+                    '<button disabled="true" class="left-button" >LEFT </button>' +
+                    '<button disabled="true" class="right-button" >RIGHT</button>' +
+                    '<button disabled="true" class="cancel-scroll-button" style="display: none;">CANCEL SCROLL</button>' +
+                  '</div>' +
                 '</div>'
+
+var overlay = '<div id="eye-tracking-mask" style="position: fixed; top: 0; left: 0; display: block;"></div>'
+$('body').append(overlay)
 
 $('html').append(controls)
 positionControls();
-spotlightCursorOn()
 
 $(window).resize(function(e){
   positionControls();
 });
 
-$('#eye-tracking-controls').on({
-  mouseover: function (e) { },
-  mouseout: function (e) { }
+$('#eye-tracking-controls .action-button').on({
+  mouseenter: function (e) {
+    if (!actionButtonActivated) {
+      var self = this
+      var actionActivationTimer = setTimeout(function () {
+        actionButtonActivated = true
+        $(self).addClass('active')
+        spotlightCursorOn()
+        setTimeout(function () {
+          prepareKeyboard()
+          startSamplingTargets()
+          sampleIntervalTimer = setInterval(sampleElements, activationInterval)
+        }, userSelectionDelay)
+        clearInterval(actionActivationTimer)
+      }, gazeTime)
+    }
+  },
+  mouseleave: function (e) {
+    clearInterval(actionActivationTimer)
+  }
 });
 
-$('#eye-tracking-controls .action-button').on('click', function (e) {
-  potentialTargets = []
-
-  $('body *').on('eye-tracking-targeting', function (e) {
-    potentialTargets.slice(-(sampleSize + 10))
-    potentialTargets.push(this)
-    pickTarget()
-    e.stopPropagation()
-  })
-
-  $('body').on('mousemove', function (e) {
-    spotlightCursorMove(e)
-    cursorPosition = { x: e.clientX, y: e.clientY }
-  });
-
-  prepareKeyboard()
-  startSamplingTargets()
-  showCancelButton()
-})
-
-$('#eye-tracking-controls .cancel-action-button').on('click', function (e) {
-  spotlightCursorOff()
-  stopSamplingTargets()
-  hideCancelButton()
-})
-
-function hideCancelButton () {
-  $('#eye-tracking-controls .cancel-action-button').hide()
+function guessTarget (e) {
+  pickTarget(this)
+  e.stopPropagation()
 }
 
-function showCancelButton () {
-  $('#eye-tracking-controls .cancel-action-button').show()
-}
-
-function pickTarget () {
+function pickTarget (newTarget) {
+  potentialTargets.slice(-(sampleSize + 10))
+  potentialTargets.push(newTarget)
   if (potentialTargets.length > sampleSize) {
     var recentTargetSamples = potentialTargets.slice(-sampleSize)
     var recentlySampledTargets = $.unique(recentTargetSamples)
     if (recentlySampledTargets.length = 1) {
       var targetElement = recentlySampledTargets[0]
-      triggerSelection(targetElement)
-      stopSamplingTargets()
-      spotlightCursorOff()
-      hideCancelButton()
+      triggerSelectionOf(targetElement)
     }
   }
 }
@@ -101,7 +88,7 @@ function positionControls () {
 }
 
 function prepareKeyboard () {
-  $('text, textarea, input[type!="submit"]').keyboard({
+  $('text, textarea, input:not(:file):not(:radio):not(:submit):not(:hidden):not(:button):not(:checkbox):not(:image)').keyboard({
     // set this to ISO 639-1 language code to override language set by the layout
     // http://en.wikipedia.org/wiki/List_of_ISO_639-1_codes
     // language defaults to "en" if not found
@@ -129,11 +116,17 @@ function prepareKeyboard () {
 }
 
 function spotlightCursorMove (e) {
+  cursorPosition = { x: e.clientX, y: e.clientY }
   $('#eye-tracking-mask').css('background', 'radial-gradient(' +
       cursorSize + 'px at ' + e.clientX + 'px ' + e.clientY + 'px, ' +
       'rgba(255, 255, 255, 0) 60%, ' +
       'rgba(255, 255, 255, 0.02) 80%, ' +
-      'rgba(150, 150, 150, 0.32) 100%)');
+      'rgba(150, 150, 150, 0.3) 100%)');
+}
+
+function spotlightCursorOn () {
+  $('#eye-tracking-mask').css('background', 'rgba(150, 150, 150, 0.3)');
+  $('body').on('mousemove', spotlightCursorMove);
 }
 
 function spotlightCursorOff () {
@@ -141,34 +134,30 @@ function spotlightCursorOff () {
   $('#eye-tracking-mask').css('background', '')
 }
 
-function spotlightCursorOn () {
-  var overlay = '<div id="eye-tracking-mask" style="position: fixed; top: 0; left: 0; display: block;"></div>'
-  $('body').append(overlay)
-}
-
-function sampleTargets () {
+function sampleElements () {
   $('#eye-tracking-mask').css('pointer-events', 'none')
   var element = document.elementFromPoint(cursorPosition.x, cursorPosition.y)
-  $(element).trigger('eye-tracking-targeting')
+  $(element).trigger('eye-targeting')
   $('#eye-tracking-mask').css('pointer-events', 'auto')
 }
 
 function startSamplingTargets () {
-  setTimeout(function () {
-    guessingTimer = setInterval(sampleTargets, guessInterval)
-  }, userSelectionDelay)
+  potentialTargets = []
+  $('body *').on('eye-targeting', guessTarget)
 }
 
 function stopSamplingTargets () {
-  $('body *').off('eye-tracking-targeting')
-  clearInterval(guessingTimer)
+  $('body *').off('eye-targeting')
+  potentialTargets = []
 }
 
-function triggerSelection (element) {
-  setTimeout(function () {
-    try { $(element)[0].click() }
-    finally {
-      console.log('Target element is: ', element)
-    }
-  }, hoverDuration)
+function triggerSelectionOf (element) {
+  try { $(element)[0].click() }
+  finally {
+    console.log('Target element is: ', element)
+    stopSamplingTargets()
+    spotlightCursorOff()
+    actionButtonActivated = false
+    $('#eye-tracking-controls .action-button').removeClass('active')
+  }
 }
