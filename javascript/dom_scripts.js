@@ -8,26 +8,6 @@ var cursorPosition = { x: -1000, y: -1000 }
 var potentialTargets = []
 var guessingTimer;
 
-var FOCUSSABLE_TAG_NAMES = [
-  'A',
-  'DIV',
-  'LI',
-  'BUTTON',
-  'INPUT',
-  'CHECKBOX',
-  'DIALOG',
-  'FILEUPLOAD',
-  'KEYGEN',
-  'MENUITEM',
-  'OPTION',
-  'PASSWORD',
-  'RADIO',
-  'SELECT',
-  'SUBMIT',
-  'TEXT',
-  'TEXTAREA'
-]
-
 var controls =  '<div id="eye-tracking-controls" style="position: fixed; display: none;">' +
                   '<button class="action-button" type="button">ACTION</button>' +
                   '<button class="cancel-button" type="button">CANCEL</button>' +
@@ -50,12 +30,10 @@ $('#eye-tracking-controls > .action-button').on('click', function (e) {
   potentialTargets = []
 
   $('body *').on('eye-tracking-targeting', function (e) {
-    if (isFocussable(this)) {
-      potentialTargets.slice(-(sampleSize + 10))
-      potentialTargets.push(this)
-      pickTarget()
-      e.stopPropagation()
-    }
+    potentialTargets.slice(-(sampleSize + 10))
+    potentialTargets.push(this)
+    pickTarget()
+    e.stopPropagation()
   })
 
   $('body').on('mousemove', function (e) {
@@ -70,15 +48,6 @@ $('#eye-tracking-controls > .cancel-button').on('click', function (e) {
   spotlightCursorOff()
   stopSamplingTargets()
 })
-
-function isFocussable (element) {
-  return (
-    element.onfocus === 'function' ||
-    element.onclick === 'function' ||
-    FOCUSSABLE_TAG_NAMES.indexOf(element.tagName) !== -1 ||
-    element.tabIndex >= 0
-  )
-}
 
 function pickTarget () {
   if (potentialTargets.length > sampleSize) {
@@ -134,7 +103,7 @@ function startSamplingTargets () {
 }
 
 function stopSamplingTargets () {
-  $(FOCUSSABLE_TAG_NAMES.join()).off('eye-tracking-targeting')
+  $('body *').off('eye-tracking-targeting')
   clearInterval(guessingTimer)
 }
 
