@@ -9,8 +9,26 @@ var potentialTargets = []
 var guessingTimer;
 
 var controls =  '<div id="eye-tracking-controls" style="position: fixed; display: none;">' +
-                  '<button class="action-button" type="button">ACTION</button>' +
-                  '<button class="cancel-button" type="button">CANCEL</button>' +
+                  '<div class="action-controls" >' +
+                    '<button class="action-button" >ACTION</button>' +
+                    '<button class="cancel-action-button" style="display: none;">CANCEL ACTION</button>' +
+                    '<button class="keyboard-button" >KEYBOARD</button>' +
+                  '</div>' +
+                  '<div class="scroll-controls" >' +
+                    '<button class="scroll-button" >SCROLL</button>' +
+                    '<button class="up-button" >UP   </button>' +
+                    '<button class="down-button" >DOWN </button>' +
+                    '<button class="left-button" >LEFT </button>' +
+                    '<button class="right-button" >RIGHT</button>' +
+                    '<button class="cancel-scroll-button" style="display: none;">CANCEL SCROLL</button>' +
+                  '</div>' +
+                  '<div class="browser-controls" >' +
+                    '<button class="back-button" >BACK</button>' +
+                    '<button class="forward-button" >FORWARD</button>' +
+                    '<button class="refresh-button" >REFRESH</button>' +
+                    '<button class="home-button" >HOME</button>' +
+                    '<button class="settings-button" >SETTINGS</button>' +
+                  '</div>' +
                 '</div>'
 
 $('html').append(controls)
@@ -26,7 +44,7 @@ $('#eye-tracking-controls').on({
   mouseout: function (e) { }
 });
 
-$('#eye-tracking-controls > .action-button').on('click', function (e) {
+$('#eye-tracking-controls .action-button').on('click', function (e) {
   potentialTargets = []
 
   $('body *').on('eye-tracking-targeting', function (e) {
@@ -42,12 +60,22 @@ $('#eye-tracking-controls > .action-button').on('click', function (e) {
   });
 
   startSamplingTargets()
+  showCancelButton()
 })
 
-$('#eye-tracking-controls > .cancel-button').on('click', function (e) {
+$('#eye-tracking-controls .cancel-action-button').on('click', function (e) {
   spotlightCursorOff()
   stopSamplingTargets()
+  hideCancelButton()
 })
+
+function hideCancelButton () {
+  $('#eye-tracking-controls .cancel-action-button').hide()
+}
+
+function showCancelButton () {
+  $('#eye-tracking-controls .cancel-action-button').show()
+}
 
 function pickTarget () {
   if (potentialTargets.length > sampleSize) {
@@ -58,16 +86,17 @@ function pickTarget () {
       triggerSelection(targetElement)
       stopSamplingTargets()
       spotlightCursorOff()
+      hideCancelButton()
     }
   }
 }
 
 function positionControls () {
   var windHeight = $(window).height();
-  var footerHeight = $('#eye-tracking-controls').height();
-  var offset = parseInt(windHeight) - parseInt(footerHeight);
+  var controlsHeight = $('#eye-tracking-controls').height();
+  var offset = parseInt(windHeight) - parseInt(controlsHeight);
   $('#eye-tracking-controls').css('top',offset);
-  $('body').css('margin-bottom', footerHeight);
+  $('body').css('margin-bottom', controlsHeight);
   $('#eye-tracking-controls').css('display','block'); // show it once it's positioned
 }
 

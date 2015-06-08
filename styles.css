@@ -8,6 +8,12 @@ html, body {
   z-index: 999999999999;
 }
 
+#eye-tracking-controls > div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
 #eye-tracking-mask {
   height: 100%;
   width: 100%;
@@ -15,8 +21,10 @@ html, body {
   cursor: crosshair;
 }
 
-#eye-tracking-controls > button {
-  margin: 0.25em;
+#eye-tracking-controls button {
+  flex-grow: 1;
+  flex-shrink: 1;
+  margin: 3px;
   box-shadow: 0 1px 0 rgba(255,255,255,0.5) inset;
   -webkit-transition: background-color 300ms ease-out;
   -moz-transition: background-color 300ms ease-out;
@@ -26,21 +34,21 @@ html, body {
   cursor: pointer;
   font-family: Helvetica, Arial, Sans-Serif;
   font-weight: 300;
-  line-height: 1.5em;
+  line-height: 1em;
   position: relative;
   text-decoration: none;
   text-align: center;
   display: inline-block;
-  padding-top: 1.5em;
-  padding-right: 1.5em;
-  padding-bottom: 1.5em;
-  padding-left: 1.5em;
-  font-size: 1.5em;
+  padding-top: 1em;
+  padding-right: 1em;
+  padding-bottom: 1em;
+  padding-left: 1em;
+  font-size: 1em;
   background-color: darkseagreen;
   border-color: cadetblue;
   color: white;
   height: auto;
   width: auto;
 }
-}
+
 
