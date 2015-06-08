@@ -17,8 +17,18 @@
     "scripts": ["javascript/background.js"]
   },
   "content_scripts": [ {
-    "css": ["styles.css"],
-    "js": [ "/javascript/jquery-2.1.4.min.js", "/javascript/dom_scripts.js" ],
+    "css": [
+      "/bower_components/keyboard/dist/css/keyboard.min.css",
+      "styles.css"
+    ],
+    "js": [
+      "/bower_components/jquery/dist/jquery.min.js",
+      "/bower_components/jquery-ui/jquery-ui.min.js",
+      "/bower_components/keyboard/dist/js/jquery.keyboard.min.js",
+      "/bower_components/keyboard/dist/layouts/keyboard-layouts-combined.min.js",
+      "/bower_components/keyboard/dist/layouts/keyboard-layouts-greywyvern.min.js",
+      "/javascript/dom_scripts.js"
+    ],
     "run_at": "document_idle",
     "matches": [ "http://*/*", "https://*/*"]
   }],
