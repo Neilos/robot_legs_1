@@ -11,8 +11,8 @@ html, body {
 #eye-tracking-mask {
   height: 100%;
   width: 100%;
-  pointer-events: none;
   z-index: 999999999999;
+  cursor: crosshair;
 }
 
 #eye-tracking-controls > button {
