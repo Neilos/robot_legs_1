@@ -165,23 +165,10 @@ function stopSamplingTargets () {
 }
 
 function triggerSelection (element) {
-  try { $(element).mouseover() }
-  finally {
-    try { $(element)[0].focus() }
+  setTimeout(function () {
+    try { $(element)[0].click() }
     finally {
-      try { $(element).select() }
-      finally {
-        setTimeout(function () {
-          try { $(element)[0].click() }
-          catch (e) {
-            try { $(element).click() }
-            finally { console.log('second click attempt')}
-          }
-          finally {
-            console.log('Target element is: ', element)
-          }
-        }, hoverDuration)
-      }
+      console.log('Target element is: ', element)
     }
-  }
+  }, hoverDuration)
 }
