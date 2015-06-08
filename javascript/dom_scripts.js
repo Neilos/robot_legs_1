@@ -63,9 +63,7 @@ $('#eye-tracking-controls > .action-button').on('click', function (e) {
     cursorPosition = { x: e.clientX, y: e.clientY }
   });
 
-  setTimeout(function () {
-    guessingTimer = setInterval(sampleTargets, guessInterval)
-  }, userSelectionDelay)
+  startSamplingTargets()
 })
 
 $('#eye-tracking-controls > .cancel-button').on('click', function (e) {
@@ -128,6 +126,12 @@ function sampleTargets () {
   var element = document.elementFromPoint(cursorPosition.x, cursorPosition.y)
   $(element).trigger('eye-tracking-targeting')
   $('#eye-tracking-mask').css('pointer-events', 'auto')
+}
+
+function startSamplingTargets () {
+  setTimeout(function () {
+    guessingTimer = setInterval(sampleTargets, guessInterval)
+  }, userSelectionDelay)
 }
 
 function stopSamplingTargets () {
