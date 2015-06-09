@@ -185,9 +185,18 @@ function spotlightCursorOff () {
 
 function sampleElements () {
   $('#eye-tracking-mask').css('pointer-events', 'none')
-  var element = document.elementFromPoint(cursorPosition.x, cursorPosition.y)
-  $(element).trigger('eye-targeting', [ cursorPosition.x, cursorPosition.y ])
+  var point = randomLocalisedPoint()
+  var element = document.elementFromPoint(point.x, point.y)
+  $(element).trigger('eye-targeting', [ point.x, point.y ])
   $('#eye-tracking-mask').css('pointer-events', 'auto')
+}
+
+function randomLocalisedPoint () {
+  var selectionRadius = Math.pow(Math.abs(cursorSize), 1/4)
+  var angle = Math.random()*Math.PI*2;
+  x = Math.ceil(Math.cos(angle)*selectionRadius + cursorPosition.x);
+  y = Math.ceil(Math.sin(angle)*selectionRadius + cursorPosition.y);
+  return {x: x, y: y}
 }
 
 function startSamplingTargets () {
