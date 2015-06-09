@@ -130,7 +130,7 @@ function positionControls () {
   var controlsHeight = $('#eye-tracking-controls').height();
   var offset = parseInt(window.innerHeight) - parseInt(controlsHeight);
   $('#eye-tracking-controls').css('top',offset);
-  $('body').css('margin-bottom', controlsHeight);
+  $('body').css('margin-bottom', 1.5 * controlsHeight);
   $('#eye-tracking-controls').css('display','block'); // show it once it's positioned
 }
 
