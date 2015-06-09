@@ -170,11 +170,11 @@ function spotlightCursorMove (e) {
       + (zoomAdjustment * e.clientX) + 'px ' + (zoomAdjustment * e.clientY) + 'px, ' +
       'rgba(255, 255, 255, 0) 60%, ' +
       'rgba(255, 255, 255, 0.02) 80%, ' +
-      'rgba(150, 150, 150, 0.3) 100%)');
+      'rgba(150, 150, 150, 0.4) 100%)');
 }
 
 function spotlightCursorOn () {
-  $('#eye-tracking-mask').css('background', 'rgba(150, 150, 150, 0.3)');
+  $('#eye-tracking-mask').css('background', 'rgba(150, 150, 150, 0.4)');
   $('body').on('mousemove', spotlightCursorMove);
 }
 
