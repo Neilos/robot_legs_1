@@ -1,7 +1,7 @@
 
 var gazeTime = 1500 // time staring at something until action is confirmed
 var userSelectionDelay = 2500 // delay for user to focus before gazeTime starts
-var activationInterval = 400 // delay between target guesses
+var activationInterval = 100 // delay between target guesses
 var cursorSize = 90
 var sampleSize = gazeTime / activationInterval // number of consecutive elements that should match
 var cursorPosition = { x: -1000, y: -1000 }
@@ -31,7 +31,8 @@ var render = function(left, top, zoom) {
 var scroller = new Scroller(render, {
   zooming: true,
   animating: true,
-  animationDuration: 2 * 300
+  animationDuration: 2 * 300,
+  maxZoom: 5
 });
 
 var rect = content.getBoundingClientRect();
@@ -101,7 +102,7 @@ $('#eye-tracking-controls .action-button').on({
   }
 });
 
-function pickTarget (e) {
+function pickTarget (e, cursorX, cursorY) {
   potentialTargets.slice(-(sampleSize))
   potentialTargets.push(this)
   if (potentialTargets.length > sampleSize) {
@@ -212,9 +213,10 @@ function stopSamplingTargets () {
 function triggerSelectionOf (element) {
   try {
     $(element)[0].click()
+  } catch (error) {
+    console.log(error, 'Target element that could not be clicked is: ', element)
   }
   finally {
-    console.log('Target element is: ', element)
     cancelSelection()
   }
 }
