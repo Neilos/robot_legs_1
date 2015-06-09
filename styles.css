@@ -61,3 +61,6 @@ html, body {
   border-color: cadetblue;
 }
 
+.ui-keyboard-text {
+  pointer-events: none;
+}
