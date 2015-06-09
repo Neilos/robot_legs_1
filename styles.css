@@ -39,9 +39,9 @@ html, body {
   text-decoration: none;
   text-align: center;
   display: inline-block;
-  padding-top: 1em;
+  padding-top: 2em;
   padding-right: 1em;
-  padding-bottom: 1em;
+  padding-bottom: 2em;
   padding-left: 1em;
   font-size: 1em;
   background-color: darkseagreen;
@@ -61,3 +61,6 @@ html, body {
   border-color: cadetblue;
 }
 
+.ui-keyboard-text {
+  pointer-events: none;
+}

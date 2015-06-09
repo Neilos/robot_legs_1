@@ -1,14 +1,55 @@
+
 var gazeTime = 1500 // time staring at something until action is confirmed
 var userSelectionDelay = 2500 // delay for user to focus before gazeTime starts
 var activationInterval = 100 // delay between target guesses
 var cursorSize = 90
-var hoverDuration = 400 // time to allow for hovering animations before triggering clicks
 var sampleSize = gazeTime / activationInterval // number of consecutive elements that should match
 var cursorPosition = { x: -1000, y: -1000 }
 var potentialTargets = []
 var actionActivationTimer = []
-var sampleIntervalTimer
+var sampleIntervalTimers = []
 var actionButtonActivated = false
+var userZoomLevel = 1
+var newZoomLevel = userZoomLevel
+var zoomDelta = 0.0001 * activationInterval
+var animateZoom = true
+var content = $('body')[0]
+var container = $('html')[0]
+var clientWidth = 0
+var clientHeight = 0
+var contentWidth = content.clientWidth
+var contentHeight = content.clientHeight
+
+////////////////////////////////////
+
+var render = function(left, top, zoom) {
+  content.style.marginLeft = left ? (-left/zoom) + 'px' : '';
+  content.style.marginTop = top ? (-top/zoom) + 'px' : '';
+  content.style.zoom = zoom || '';
+};
+
+var scroller = new Scroller(render, {
+  zooming: true,
+  animating: true,
+  animationDuration: 2 * 300,
+  maxZoom: 5
+});
+
+var rect = content.getBoundingClientRect();
+scroller.setPosition(rect.left + container.clientLeft, rect.top + container.clientTop);
+
+// Reflow handling
+var reflow = function() {
+  clientWidth = container.clientWidth;
+  clientHeight = container.clientHeight;
+  scroller.setDimensions(clientWidth, clientHeight, contentWidth, contentHeight);
+};
+
+window.addEventListener("resize", reflow, false);
+reflow();
+
+//////////////////////////////////
+
 
 var controls =  '<div id="eye-tracking-controls" style="position: fixed; display: none;">' +
                   '<div class="browser-controls" >' +
@@ -50,40 +91,47 @@ $('#eye-tracking-controls .action-button').on({
         setTimeout(function () {
           prepareKeyboard()
           startSamplingTargets()
-          sampleIntervalTimer = setInterval(sampleElements, activationInterval)
+          sampleIntervalTimers.push(setInterval(sampleElements, activationInterval))
         }, userSelectionDelay)
-        clearInterval(actionActivationTimer)
+        clearTimeout(actionActivationTimer)
       }, gazeTime)
     }
   },
   mouseleave: function (e) {
-    clearInterval(actionActivationTimer)
+    clearTimeout(actionActivationTimer)
   }
 });
 
-function guessTarget (e) {
-  pickTarget(this)
-  e.stopPropagation()
-}
-
-function pickTarget (newTarget) {
-  potentialTargets.slice(-(sampleSize + 10))
-  potentialTargets.push(newTarget)
+function pickTarget (e, cursorX, cursorY) {
+  potentialTargets.slice(-(sampleSize))
+  potentialTargets.push(this)
   if (potentialTargets.length > sampleSize) {
     var recentTargetSamples = potentialTargets.slice(-sampleSize)
     var recentlySampledTargets = $.unique(recentTargetSamples)
-    if (recentlySampledTargets.length = 1) {
+    if (recentlySampledTargets.length == 1) {
       var targetElement = recentlySampledTargets[0]
-      triggerSelectionOf(targetElement)
+      triggerSelectionOf(targetElement, cursorPosition.x, cursorPosition.y)
+    } else {
+      newZoomLevel = newZoomLevel + zoomDelta
+      if (newZoomLevel > scroller.options.maxZoom) {
+        cancelSelection()
+      } else {
+        scroller.zoomTo(newZoomLevel, animateZoom, cursorPosition.x, cursorPosition.y);
+        spotlightCursorMove({
+          clientX: cursorPosition.x,
+          clientY: cursorPosition.y
+        })
+      }
     }
   }
+  e.stopPropagation()
 }
 
 function positionControls () {
   var controlsHeight = $('#eye-tracking-controls').height();
   var offset = parseInt(window.innerHeight) - parseInt(controlsHeight);
   $('#eye-tracking-controls').css('top',offset);
-  $('body').css('margin-bottom', controlsHeight);
+  $('body').css('margin-bottom', 1.5 * controlsHeight);
   $('#eye-tracking-controls').css('display','block'); // show it once it's positioned
 }
 
@@ -100,8 +148,8 @@ function prepareKeyboard () {
 
     position : {
       of : $('body'), // null (attach to input/textarea) or a jQuery object (attach elsewhere)
-      my : 'center top',
-      at : 'center top',
+      my : 'left top',
+      at : 'left top',
       collision: 'fit fit'
     },
 
@@ -116,16 +164,18 @@ function prepareKeyboard () {
 }
 
 function spotlightCursorMove (e) {
+  var zoomAdjustment = userZoomLevel / newZoomLevel
   cursorPosition = { x: e.clientX, y: e.clientY }
   $('#eye-tracking-mask').css('background', 'radial-gradient(' +
-      cursorSize + 'px at ' + e.clientX + 'px ' + e.clientY + 'px, ' +
+      (zoomAdjustment * cursorSize) + 'px at '
+      + (zoomAdjustment * e.clientX) + 'px ' + (zoomAdjustment * e.clientY) + 'px, ' +
       'rgba(255, 255, 255, 0) 60%, ' +
       'rgba(255, 255, 255, 0.02) 80%, ' +
-      'rgba(150, 150, 150, 0.3) 100%)');
+      'rgba(150, 150, 150, 0.4) 100%)');
 }
 
 function spotlightCursorOn () {
-  $('#eye-tracking-mask').css('background', 'rgba(150, 150, 150, 0.3)');
+  $('#eye-tracking-mask').css('background', 'rgba(150, 150, 150, 0.4)');
   $('body').on('mousemove', spotlightCursorMove);
 }
 
@@ -136,14 +186,23 @@ function spotlightCursorOff () {
 
 function sampleElements () {
   $('#eye-tracking-mask').css('pointer-events', 'none')
-  var element = document.elementFromPoint(cursorPosition.x, cursorPosition.y)
-  $(element).trigger('eye-targeting')
+  var point = randomLocalisedPoint()
+  var element = document.elementFromPoint(point.x, point.y)
+  $(element).trigger('eye-targeting', [ point.x, point.y ])
   $('#eye-tracking-mask').css('pointer-events', 'auto')
+}
+
+function randomLocalisedPoint () {
+  var selectionRadius = Math.pow(Math.abs(cursorSize), 1/4)
+  var angle = Math.random()*Math.PI*2;
+  x = Math.ceil(Math.cos(angle)*selectionRadius + cursorPosition.x);
+  y = Math.ceil(Math.sin(angle)*selectionRadius + cursorPosition.y);
+  return {x: x, y: y}
 }
 
 function startSamplingTargets () {
   potentialTargets = []
-  $('body *').on('eye-targeting', guessTarget)
+  $('body *').on('eye-targeting', pickTarget)
 }
 
 function stopSamplingTargets () {
@@ -152,12 +211,29 @@ function stopSamplingTargets () {
 }
 
 function triggerSelectionOf (element) {
-  try { $(element)[0].click() }
-  finally {
-    console.log('Target element is: ', element)
-    stopSamplingTargets()
-    spotlightCursorOff()
-    actionButtonActivated = false
-    $('#eye-tracking-controls .action-button').removeClass('active')
+  try {
+    $(element)[0].click()
+  } catch (error) {
+    console.log(error, 'Target element that could not be clicked is: ', element)
   }
+  finally {
+    cancelSelection()
+  }
+}
+
+function cancelSelection () {
+  clearSampleIntervals()
+  newZoomLevel = userZoomLevel
+  scroller.zoomTo(userZoomLevel, animateZoom, cursorPosition.x, cursorPosition.y);
+  stopSamplingTargets()
+  spotlightCursorOff()
+  actionButtonActivated = false
+  $('#eye-tracking-controls .action-button').removeClass('active')
+}
+
+function clearSampleIntervals () {
+  sampleIntervalTimers.forEach(function (interval) {
+    clearInterval(interval)
+  })
+  sampleIntervalTimers = []
 }
