@@ -7,7 +7,7 @@ var sampleSize = gazeTime / activationInterval // number of consecutive elements
 var cursorPosition = { x: -1000, y: -1000 }
 var potentialTargets = []
 var actionActivationTimer = []
-var sampleIntervalTimer
+var sampleIntervalTimers = []
 var actionButtonActivated = false
 var userZoomLevel = 1
 var newZoomLevel = userZoomLevel
@@ -90,14 +90,14 @@ $('#eye-tracking-controls .action-button').on({
         setTimeout(function () {
           prepareKeyboard()
           startSamplingTargets()
-          sampleIntervalTimer = setInterval(sampleElements, activationInterval)
+          sampleIntervalTimers.push(setInterval(sampleElements, activationInterval))
         }, userSelectionDelay)
-        clearInterval(actionActivationTimer)
+        clearTimeout(actionActivationTimer)
       }, gazeTime)
     }
   },
   mouseleave: function (e) {
-    clearInterval(actionActivationTimer)
+    clearTimeout(actionActivationTimer)
   }
 });
 
@@ -211,10 +211,18 @@ function triggerSelectionOf (element) {
 }
 
 function cancelSelection () {
+  clearSampleIntervals()
   newZoomLevel = userZoomLevel
   scroller.zoomTo(userZoomLevel, animateZoom, cursorPosition.x, cursorPosition.y);
   stopSamplingTargets()
   spotlightCursorOff()
   actionButtonActivated = false
   $('#eye-tracking-controls .action-button').removeClass('active')
+}
+
+function clearSampleIntervals () {
+  sampleIntervalTimers.forEach(function (interval) {
+    clearInterval(interval)
+  })
+  sampleIntervalTimers = []
 }
